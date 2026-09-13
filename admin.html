@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบจัดการออเดอร์ (Admin) - หลังมอ</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-section {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(111, 78, 55, 0.06);
+      border: 1px solid #EBE5DF;
+      margin-top: 2rem;
+    }
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 1.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    th {
+      background-color: #F8F5F2;
+      color: #6F4E37;
+      padding: 0.9rem 1rem;
+      font-weight: 600;
+      border-bottom: 2px solid #EBE5DF;
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid #EBE5DF;
+      color: #332C27;
+      vertical-align: top;
+    }
+    tr:hover {
+      background-color: #FAF8F5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-container">
+      <a href="index.html" class="logo">หลังมอ <span>(Admin System)</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">ไปยังหน้าเว็บหลัก</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="container section">
+    <div class="admin-section">
+      <h2 style="color: #6F4E37; margin-bottom: 0.5rem;">📋 รายการสั่งซื้อทั้งหมด (Orders List)</h2>
+      <p style="color: #7A726C; font-size: 0.9rem;">ระบบจะแสดงรายการออเดอร์ที่มีผู้สั่งเข้ามาโดยอัตโนมัติ</p>
+
+      <div class="table-responsive">
+        <table id="ordersTable">
+          <thead>
+            <tr>
+              <th>วันเวลา</th>
+              <th>ชื่อลูกค้า</th>
+              <th>เบอร์โทร / Line</th>
+              <th>รายการสินค้า</th>
+              <th>จำนวนเงินรวม</th>
+              <th>หมายเหตุ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- script.js จะนำข้อมูลออเดอร์มาแทรกในนี้ -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="text-align: center;">
+      <p style="font-size: 1.1rem; font-weight: 500; color: #ffffff; margin-bottom: 0.5rem;">หลังมอ (Lang More) Management</p>
+      <p style="font-size: 0.85rem;">&copy; 2026 Lang More Cafe. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ตะกร้าสินค้า & สั่งซื้อ - หลังมอ (Lang More)</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .cart-summary-box {
+      background-color: #FAFAFA;
+      border: 1px solid #EBE5DF;
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    .summary-item {
+      padding-bottom: 0.75rem;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px dashed #EBE5DF;
+    }
+    .summary-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .item-main {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      color: #332C27;
+    }
+    .item-menu-note {
+      font-size: 0.85rem;
+      color: #8C6D58;
+      margin-top: 0.25rem;
+      padding-left: 0.5rem;
+    }
+    .order-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(111, 78, 55, 0.08);
+      border: 1px solid #EBE5DF;
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #332C27;
+      margin-bottom: 0.4rem;
+      font-size: 0.95rem;
+    }
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #EBE5DF;
+      border-radius: 8px;
+      background-color: #FAFAFA;
+      color: #332C27;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #6F4E37;
+      background-color: #FFFFFF;
+    }
+    textarea.form-control {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .btn-submit {
+      width: 100%;
+      background-color: #6F4E37;
+      color: #ffffff;
+      padding: 0.85rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      margin-top: 1rem;
+    }
+    .btn-submit:hover {
+      background-color: #563C29;
+    }
+    .btn-back {
+      display: inline-block;
+      text-align: center;
+      color: #7A726C;
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      transition: color 0.2s;
+    }
+    .btn-back:hover {
+      color: #6F4E37;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-container">
+      <a href="index.html" class="logo">หลังมอ <span>(Lang More)</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">หน้าแรก</a></li>
+        <li><a href="product.html">เมนูทั้งหมด</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="container section">
+    <div class="order-container">
+      <a href="product.html" class="btn-back">← กลับไปเลือกซื้อเพิ่ม</a>
+      
+      <h2 style="color: #6F4E37; margin-bottom: 0.5rem; text-align: center;">สรุปรายการสั่งซื้อ</h2>
+      <p style="text-align: center; color: #7A726C; font-size: 0.9rem; margin-bottom: 1.5rem;">กรุณากรอกข้อมูลเพื่อยืนยันออเดอร์ของคุณ</p>
+
+      <form id="orderForm">
+        <div class="form-group">
+          <label for="customerName">ชื่อลูกค้า</label>
+          <input type="text" id="customerName" class="form-control" placeholder="เช่น คุณปลาวาฬ" required>
+        </div>
+
+        <div class="form-group">
+          <label for="contact">เบอร์โทร / Line ID</label>
+          <input type="text" id="contact" class="form-control" placeholder="เช่น 081-234-5678 หรือ line_id" required>
+        </div>
+
+        <div class="form-group">
+          <label style="font-weight: 600; color: #332C27; margin-bottom: 0.5rem; display: block;">รายการสินค้าที่เลือก</label>
+  
+          <!-- กล่องแสดงรายการสินค้าพร้อมหมายเหตุรายเมนู (script.js จะวาดสินค้าใส่ตรงนี้) -->
+          <div id="cart-summary-box" class="cart-summary-box"></div>
+  
+          <!-- ซ่อน input id="items" ไว้เบื้องหลังเพื่อส่งข้อมูลเข้า Google Sheets -->
+          <input type="hidden" id="items" name="items">
+        </div>
+      <div style="text-align: right; margin-top: 0.5rem;">
+        <a href="product.html" style="font-size: 0.85rem; color: #8C6D58; text-decoration: underline;">
+          ✏️ แก้ไขรายการสินค้า / เพิ่มลดจำนวน
+        </a>
+      </div>
+
+        <div class="form-group">
+          <label for="total">จำนวนเงินรวมทั้งสิ้น (บาท)</label>
+          <input type="text" id="total" class="form-control" readonly style="font-weight: 700; color: #6F4E37; font-size: 1.2rem; background-color: #F8F5F2;">
+        </div>
+
+        <div class="form-group">
+          <label for="note">หมายเหตุการจัดส่ง / การรับสินค้า (ภาพรวมออเดอร์)</label>
+          <textarea id="note" class="form-control" placeholder="เช่น แยกถุงแต่ละเมนู, วางไว้ที่โต๊ะหมายเลข 5, โทรแจ้งเมื่อทำเสร็จ"></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">ยืนยันสั่งซื้อ ☕</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="text-align: center;">
+      <p style="font-size: 1.1rem; font-weight: 500; color: #ffffff; margin-bottom: 0.5rem;">หลังมอ (Lang More)</p>
+      <p>Co-Working & Study Friendly Cafe | พื้นที่พักใจ ชาร์จไฟให้ร่างกาย แล้วไปลุยต่อ</p>
+      <p style="margin-top: 1rem; font-size: 0.85rem;">&copy; 2026 Lang More Cafe. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

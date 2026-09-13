@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เมนูทั้งหมด - หลังมอ (Lang More)</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* หัวข้อหมวดหมู่ */
+    .category-section {
+      margin-top: 2.5rem;
+      margin-bottom: 3rem;
+    }
+    .category-title {
+      font-size: 1.5rem;
+      color: #6F4E37;
+      border-bottom: 2px solid #EBE5DF;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Grid รายการสินค้า */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .product-card {
+      background-color: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(111, 78, 55, 0.06);
+      border: 1px solid #EBE5DF;
+      display: flex;
+      flex-direction: column;
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 35px rgba(111, 78, 55, 0.12);
+    }
+    .product-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      background-color: #EFE6DD;
+    }
+    .product-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 0.25rem;
+      color: #332C27;
+    }
+    .product-card .price {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #6F4E37;
+      margin-bottom: 0.5rem;
+    }
+    .product-card .card-desc {
+      font-size: 0.85rem;
+      color: #7A726C;
+      margin-bottom: 1rem;
+      flex-grow: 1;
+    }
+    .btn-select {
+      display: block;
+      text-align: center;
+      background-color: #6F4E37;
+      color: #ffffff;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      margin-top: auto;
+    }
+
+    /* Modal Overlay & Card */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+    .modal-overlay.active {
+      opacity: 1; pointer-events: auto;
+    }
+    .modal-content {
+      background: #fff;
+      width: 90%; max-width: 440px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: 20px;
+      padding: 1.5rem;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    .close-btn {
+      position: absolute;
+      top: 15px; right: 20px;
+      font-size: 1.5rem; border: none; background: none; cursor: pointer; color: #7A726C;
+    }
+    .modal-img {
+      width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 1rem;
+    }
+    .option-group {
+      display: flex; gap: 0.5rem; margin: 0.5rem 0 1rem 0;
+    }
+    .option-btn {
+      flex: 1; padding: 0.5rem; border: 1px solid #6F4E37; background: #fff; color: #6F4E37;
+      border-radius: 8px; font-weight: 500; cursor: pointer; transition: 0.2s; font-size: 0.85rem;
+    }
+    .option-btn.active {
+      background: #6F4E37; color: #fff;
+    }
+    .custom-select {
+      width: 100%; padding: 0.6rem; border: 1px solid #EBE5DF; border-radius: 8px;
+      font-size: 0.9rem; margin-bottom: 0.75rem; background-color: #FAFAFA; color: #332C27;
+    }
+    .note-input {
+      width: 100%; padding: 0.6rem; border: 1px solid #EBE5DF; border-radius: 8px;
+      font-size: 0.85rem; box-sizing: border-box; margin-top: 0.25rem; margin-bottom: 1rem;
+    }
+    .btn-add-cart {
+      width: 100%; padding: 0.8rem; background: #6F4E37; color: #fff;
+      border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-add-cart:hover { background: #563C29; }
+
+    /* Floating Cart Button */
+    .cart-floating-btn {
+      position: fixed;
+      bottom: 25px; right: 25px;
+      background: #6F4E37; color: #fff;
+      padding: 0.9rem 1.4rem; border-radius: 50px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: flex; align-items: center; gap: 0.8rem;
+      text-decoration: none; font-weight: 600; z-index: 999;
+      transition: transform 0.2s;
+    }
+    .cart-floating-btn:hover { transform: scale(1.05); }
+    .cart-badge {
+      background: #EBF1E5; color: #6E8B3D;
+      padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav-container">
+      <a href="index.html" class="logo">หลังมอ <span>(Lang More)</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">หน้าแรก</a></li>
+        <li><a href="product.html">เมนูทั้งหมด</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="container section">
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <h1>เมนูทั้งหมด</h1>
+      <p>เลือกเติมพลังด้วยเครื่องดื่ม ขนม หรือเมนูจัดเซตสุดคุ้มจากร้านหลังมอได้เลย!</p>
+    </div>
+
+    <!-- Container สำหรับแสดงหมวดหมู่และสินค้า -->
+    <div id="category-container"></div>
+  </main>
+
+  <!-- Modal สำหรับเลือกตัวเลือกสินค้า -->
+  <div class="modal-overlay" id="product-modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-modal">&times;</button>
+      <img id="modal-img" class="modal-img" src="" alt="">
+      <h3 id="modal-title" style="margin-bottom: 0.25rem;"></h3>
+      <p id="modal-desc" style="font-size: 0.85rem; color: #7A726C; margin-bottom: 0.5rem;"></p>
+      <p id="modal-price" style="font-size: 1.25rem; font-weight: 700; color: #6F4E37; margin-bottom: 0.75rem;"></p>
+      
+      <!-- ตัวเลือกร้อน/เย็น/ปั่น -->
+      <div id="modal-options-container"></div>
+      
+      <!-- Dropdown สำหรับตัวเลือกเพิ่มเติมของเซต/ปังปิ้ง -->
+      <div id="modal-suboptions-container"></div>
+
+      <!-- ช่องกรอกหมายเหตุ -->
+      <label style="font-size: 0.85rem; font-weight:600; color:#332C27;">หมายเหตุเพิ่มเติม (ถ้ามี):</label>
+      <input type="text" id="modal-note" class="note-input" placeholder="เช่น หวานน้อย 50%, แยกน้ำแข็ง, ไม่ใส่หลอด">
+
+      <button class="btn-add-cart" id="add-to-cart-btn">เพิ่มลงตะกร้า 🛒</button>
+    </div>
+  </div>
+
+  <!-- ปุ่มตะกร้าลอย -->
+  <a href="order.html" class="cart-floating-btn">
+    🛒 ตะกร้าของฉัน <span class="cart-badge" id="cart-count">0</span>
+  </a>
+
+  <footer>
+    <div class="container" style="text-align: center;">
+      <p style="font-size: 1.1rem; font-weight: 500; color: #ffffff; margin-bottom: 0.5rem;">หลังมอ (Lang More)</p>
+      <p>Co-Working & Study Friendly Cafe | พื้นที่พักใจ ชาร์จไฟให้ร่างกาย แล้วไปลุยต่อ</p>
+      <p style="margin-top: 1rem; font-size: 0.85rem;">&copy; 2026 Lang More Cafe. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    const drinkListAll = ["เอสเพรสโซ", "อเมริกาโน่", "คาปูชิโน่", "ลาเต้", "Orange Espresso", "ชาดำ", "ชามะนาว", "ชาพีช", "ชาแอปเปิ้ล", "ชาไทย", "นมชมพู", "โกโก้", "มัทฉะลาเต้", "Matcha Yuzu"];
+
+    // จัดกลุ่มข้อมูลแยกตามหมวดหมู่
+    const categories = [
+      {
+        name: "☕ กาแฟ",
+        products: [
+          { id: "esp", name: "เอสเพรสโซ", image: "images/espresso.jpg", description: "เข้มข้น สะใจ ช็อตเดียวตื่นทันที! ⚡", options: [{ type: "ร้อน", price: 40 }, { type: "เย็น", price: 50 }, { type: "ปั่น", price: 60 }] },
+          { id: "ame", name: "อเมริกาโน่", image: "images/americano.jpg", description: "กาแฟดำหอมกรุ่น รสชาตินุ่มลึก ☕", options: [{ type: "ร้อน", price: 40 }, { type: "เย็น", price: 50 }] },
+          { id: "cap", name: "คาปูชิโน่", image: "images/cappuccino.jpg", description: "ความเข้มข้นของกาแฟผสมฟองนมนุ่มๆ ✨", options: [{ type: "ร้อน", price: 45 }, { type: "เย็น", price: 55 }, { type: "ปั่น", price: 65 }] },
+          { id: "lat", name: "ลาเต้", image: "images/latte.jpg", description: "นมสดผสม shots กาแฟหอมๆ นุ่มละมุน 🥛☕", options: [{ type: "ร้อน", price: 45 }, { type: "เย็น", price: 55 }, { type: "ปั่น", price: 65 }] },
+          { id: "org-esp", name: "Orange Espresso", image: "images/orange_espresso.jpg", description: "เอสเพรสโซตัดกับน้ำส้มสดเปรี้ยวหวานลงตัว 🍊☕", options: [{ type: "เย็น", price: 70 }] }
+        ]
+      },
+      {
+        name: "🍃 ชา & นมสด",
+        products: [
+          { id: "blk-tea", name: "ชาดำ", image: "images/black_tea.jpg", description: "ชาดำรสเข้มข้น หอมกลิ่นชาแท้ๆ 🍃", options: [{ type: "เย็น", price: 40 }] },
+          { id: "lmn-iced", name: "ชามะนาว", image: "images/lemon_tea_iced.jpg", description: "เปรี้ยวหวานกำลังดี หอมกลิ่นชากับมะนาวแท้ 🍋", options: [{ type: "เย็น", price: 45 }, { type: "ปั่น", price: 55 }] },
+          { id: "pch-iced", name: "ชาพีช", image: "images/peach_tea.jpg", description: "ชาพีชหอมหวานอมเปรี้ยว สดชื่นสมอง 🍑", options: [{ type: "เย็น", price: 50 }] },
+          { id: "app-iced", name: "ชาแอปเปิ้ล", image: "images/apple_tea.jpg", description: "ชาแอปเปิ้ลหอมหวานสดชื่น จิบแล้วผ่อนคลาย 🍏", options: [{ type: "เย็น", price: 50 }] },
+          { id: "tha-tea", name: "ชาไทย", image: "images/thai_tea.jpg", description: "ชาไทยเข้มข้น หอมมัน รสชาติหวานกำลังดี 🧡", options: [{ type: "ร้อน", price: 40 }, { type: "เย็น", price: 50 }, { type: "ปั่น", price: 60 }] },
+          { id: "pnk-milk", name: "นมชมพู", image: "images/pink_milk.jpg", description: "นมสดหอมหวานสีชมพูละมุน 🌸", options: [{ type: "เย็น", price: 45 }, { type: "ปั่น", price: 55 }] },
+          { id: "coc", name: "โกโก้", image: "images/cocoa.jpg", description: "โกโก้เข้มข้น รสชาติติดขมปลายลิ้นนิดๆ หวานกำลังดี 🍫", options: [{ type: "ร้อน", price: 45 }, { type: "เย็น", price: 55 }, { type: "ปั่น", price: 65 }] },
+          { id: "mat", name: "มัทฉะลาเต้", image: "images/matcha_latte.jpg", description: "มัทฉะแท้เกรดพรีเมียม ผสมนมนุ่มละมุน 🍵", options: [{ type: "ร้อน", price: 55 }, { type: "เย็น", price: 65 }, { type: "ปั่น", price: 75 }] },
+          { id: "mat-yuzu", name: "Matcha Yuzu", image: "images/matcha_yuzu.jpg", description: "มัทฉะเข้มข้นตัดด้วยส้มยูซุเปรี้ยวซ่า 🍊🍵", options: [{ type: "เย็น", price: 70 }] }
+        ]
+      },
+      {
+        name: "🍞 ขนม & ทานเล่น",
+        products: [
+          { 
+            id: "tst-01", name: "ปังปิ้งเนยนม / สังขยา", image: "images/toast.jpg", description: "ขนมปังปิ้งกรอบนอกนุ่มใน เลือกหน้าได้ตามใจชอบ 🍞", 
+            options: [{ type: "ปกติ", price: 35 }],
+            subOptions: [{ title: "เลือกหน้าขนมปัง", choices: ["เนยนม", "สังขยา"] }]
+          },
+          { id: "brn-01", name: "บราวนี่", image: "images/brownie.jpg", description: "บราวนี่เนื้อหนึบหนับ ช็อกโกแลตเต็มคำ 🍫", options: [{ type: "ปกติ", price: 45 }] },
+          { id: "crf-ori", name: "ครอฟเฟิลออริจินัล", image: "images/croffle_original.jpg", description: "แป้งครัวซองต์อบร้อนบนเตาวาฟเฟิล 🥐", options: [{ type: "ปกติ", price: 45 }] },
+          { id: "sdw-ham", name: "แซนด์วิชอบร้อน (Ham Cheese)", image: "images/ham_cheese_sandwich.jpg", description: "แฮมชิ้นโตพร้อมชีสเยิ้มๆ อบร้อนๆ 🥪", options: [{ type: "ปกติ", price: 49 }] },
+          { id: "crp-chk", name: "เครปเค้ก", image: "images/crepe_cake.jpg", description: "แป้งเครปบางนุ่มสลับชั้นครีมสด 🍰", options: [{ type: "ปกติ", price: 65 }] },
+          { id: "chc-chk", name: "เค้กช็อกโกแลต", image: "images/chocolate_cake.jpg", description: "เค้กช็อกโกแลตเนื้อนุ่ม เข้มข้น 🍫🍰", options: [{ type: "ปกติ", price: 65 }] },
+          { id: "crf-ice", name: "ครอฟเฟิลไอศกรีม", image: "images/croffle_ice_cream.jpg", description: "ครอฟเฟิลอบร้อน เสิร์ฟคู่ไอศกรีม 🍨🥐", options: [{ type: "ปกติ", price: 65 }] },
+          { id: "bsq-chk", name: "ชีสเค้กหน้าไหม้ (Basque Burnt)", image: "images/cheesecake.jpg", description: "ชีสเค้กสไตล์บาสก์ เนื้อเนียนนุ่ม 🧀🍰", options: [{ type: "ปกติ", price: 80 }] }
+        ]
+      },
+      {
+        name: "🎁 เมนูจัดเซต",
+        products: [
+          { 
+            id: "set-1", name: "Set 1: Morning Quick Bite", image: "images/set1.jpg", description: "มื้อเช้าด่วนๆ (กาแฟ 1 แก้ว + แซนด์วิชอบร้อน 1 ชิ้น) ☀️", 
+            options: [{ type: "ปกติ", price: 89 }],
+            subOptions: [
+              { title: "หัวข้อ 1 (เลือกกาแฟ)", choices: ["เอสเพรสโซ", "อเมริกาโน่", "คาปูชิโน่", "ลาเต้"] },
+              { title: "หัวข้อ 2 (เลือกประเภท)", choices: ["ร้อน", "เย็น"] }
+            ]
+          },
+          { 
+            id: "set-2", name: "Set 2: Study Sweet Combo", image: "images/set2.jpg", description: "เซตคู่ใจสายอ่านหนังสือ (เครื่องดื่มเย็น 1 แก้ว + ชีสเค้ก/พาย 1 ชิ้น) 📖🍰", 
+            options: [{ type: "ปกติ", price: 120 }],
+            subOptions: [
+              { title: "หัวข้อ 1 (เลือกเครื่องดื่มเย็น)", choices: drinkListAll },
+              { title: "หัวข้อ 2 (เลือกชีสเค้ก/พาย)", choices: ["หน้าเค้กชีสเค้ก", "บลูเบอร์รี่ชีสพาย", "สตรอว์เบอร์รี่ชีสพาย"] }
+            ]
+          },
+          { 
+            id: "set-3", name: "Set 3: Snack & Chill Set", image: "images/set3.jpg", description: "พักสายตามาคลายเครียด (ชาผลไม้ 1 แก้ว + ครอฟเฟิลไอศกรีม 1 จาน) 🍦🍹", 
+            options: [{ type: "ปกติ", price: 99 }],
+            subOptions: [
+              { title: "หัวข้อ 1 (เลือกชาผลไม้)", choices: ["ชาพีช", "ชาแอปเปิ้ล"] }
+            ]
+          },
+          { 
+            id: "set-4", name: "Set 4: Midnight Combo", image: "images/set4.jpg", description: "เซตโต้รุ่งคู่แท้คนอ่านหนังสือสอบ! (เครื่องดื่ม 1 แก้ว + บราวนี่/แซนด์วิช 1 ชิ้น) 🌙☕", 
+            options: [
+              { type: "ร้อน", price: 89 },
+              { type: "เย็น", price: 89 },
+              { type: "ปั่น (+10 บาท)", price: 99 }
+            ],
+            subOptions: [
+              { title: "หัวข้อ 1 (เลือกเครื่องดื่ม)", choices: drinkListAll }
+            ]
+          }
+        ]
+      }
+    ];
+
+    let cart = JSON.parse(localStorage.getItem('langmore_cart')) || [];
+    let currentSelectedProduct = null;
+    let currentSelectedOption = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCategories();
+      updateCartCount();
+
+      document.getElementById('close-modal').addEventListener('click', closeModal);
+      document.getElementById('product-modal').addEventListener('click', (e) => {
+        if(e.target.id === 'product-modal') closeModal();
+      });
+
+      document.getElementById('add-to-cart-btn').addEventListener('click', addToCart);
+    });
+
+    // วนลูปสร้างโซนหมวดหมู่และรายการการ์ดสินค้า
+    function renderCategories() {
+      const container = document.getElementById('category-container');
+      container.innerHTML = '';
+
+      categories.forEach(cat => {
+        const section = document.createElement('div');
+        section.className = 'category-section';
+
+        const title = document.createElement('h2');
+        title.className = 'category-title';
+        title.innerHTML = cat.name;
+
+        const grid = document.createElement('div');
+        grid.className = 'product-grid';
+
+        cat.products.forEach(product => {
+          const card = document.createElement('div');
+          card.className = 'product-card';
+          const minPrice = product.options[0].price;
+
+          card.innerHTML = `
+            <img src="${product.image}" alt="${product.name}">
+            <h3>${product.name}</h3>
+            <p class="price">เริ่ม ${minPrice} บาท</p>
+            <p class="card-desc">${product.description}</p>
+            <span class="btn-select">เลือกเมนูนี้</span>
+          `;
+
+          card.addEventListener('click', () => openModal(product));
+          grid.appendChild(card);
+        });
+
+        section.appendChild(title);
+        section.appendChild(grid);
+        container.appendChild(section);
+      });
+    }
+
+    function openModal(product) {
+      currentSelectedProduct = product;
+      currentSelectedOption = product.options[0];
+
+      document.getElementById('modal-img').src = product.image;
+      document.getElementById('modal-title').innerText = product.name;
+      document.getElementById('modal-desc').innerText = product.description;
+      document.getElementById('modal-price').innerText = `${currentSelectedOption.price} บาท`;
+      document.getElementById('modal-note').value = ''; 
+
+      const optionsContainer = document.getElementById('modal-options-container');
+      const suboptionsContainer = document.getElementById('modal-suboptions-container');
+
+      if (product.options.length > 1) {
+        optionsContainer.innerHTML = `
+          <label style="font-size: 0.85rem; font-weight:600; color:#332C27;">เลือกประเภท:</label>
+          <div class="option-group">
+            ${product.options.map((opt, i) => `
+              <button class="option-btn ${i === 0 ? 'active' : ''}" data-index="${i}">
+                ${opt.type}
+              </button>
+            `).join('')}
+          </div>
+        `;
+
+        const buttons = optionsContainer.querySelectorAll('.option-btn');
+        buttons.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            buttons.forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+
+            const index = e.target.getAttribute('data-index');
+            currentSelectedOption = product.options[index];
+            document.getElementById('modal-price').innerText = `${currentSelectedOption.price} บาท`;
+          });
+        });
+      } else {
+        optionsContainer.innerHTML = '';
+      }
+
+      if (product.subOptions && product.subOptions.length > 0) {
+        suboptionsContainer.innerHTML = product.subOptions.map((sub, i) => `
+          <label style="font-size: 0.85rem; font-weight:600; color:#332C27;">${sub.title}:</label>
+          <select class="custom-select sub-option-select" data-title="${sub.title}">
+            ${sub.choices.map(choice => `<option value="${choice}">${choice}</option>`).join('')}
+          </select>
+        `).join('');
+      } else {
+        suboptionsContainer.innerHTML = '';
+      }
+
+      document.getElementById('product-modal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('product-modal').classList.remove('active');
+    }
+
+    function addToCart() {
+      if (!currentSelectedProduct || !currentSelectedOption) return;
+
+      let itemTitle = currentSelectedProduct.name;
+      if (currentSelectedOption.type !== 'ปกติ') {
+        itemTitle += ` (${currentSelectedOption.type})`;
+      }
+
+      const subSelects = document.querySelectorAll('.sub-option-select');
+      let subDetails = [];
+      subSelects.forEach(select => {
+        subDetails.push(select.value);
+      });
+
+      if (subDetails.length > 0) {
+        itemTitle += ` [${subDetails.join(' / ')}]`;
+      }
+
+      const noteValue = document.getElementById('modal-note').value.trim();
+
+      const cartItem = {
+        name: itemTitle,
+        price: currentSelectedOption.price,
+        image: currentSelectedProduct.image,
+        note: noteValue,
+        quantity: 1
+      };
+
+      const existingIndex = cart.findIndex(item => item.name === itemTitle && item.note === noteValue);
+      if (existingIndex > -1) {
+        cart[existingIndex].quantity += 1;
+      } else {
+        cart.push(cartItem);
+      }
+
+      localStorage.setItem('langmore_cart', JSON.stringify(cart));
+      updateCartCount();
+      closeModal();
+      
+      alert(`เพิ่ม "${itemTitle}" ลงตะกร้าเรียบร้อยแล้ว!`);
+    }
+
+    function updateCartCount() {
+      const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById('cart-count').innerText = totalCount;
+    }
+  </script>
+</body>
+</html>
